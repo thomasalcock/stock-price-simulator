@@ -1,0 +1,30 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "C/C++ Runner: Debug Session",
+      "type": "cppdbg",
+      "request": "launch",
+      "args": [
+        "n_paths=5",
+        "drift=0.06",
+        "volatility=-0.04",
+        "initial_value=50"
+      ],
+      "stopAtEntry": false,
+      "externalConsole": false,
+      "cwd": "/home/thomas/projects/cpp_stuff/stats",
+      "program": "/home/thomas/projects/cpp_stuff/stats/main",
+      "MIMode": "gdb",
+      "miDebuggerPath": "gdb",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ],
+      "preLaunchTask": "build"
+    }
+  ]
+}
