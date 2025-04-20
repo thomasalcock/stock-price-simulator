@@ -30,10 +30,12 @@
             "label": "run",
             "type": "shell",
             "args": [
-                "n_paths=5",
+                "n_paths=1000",
                 "drift=0.06",
                 "volatility=0.04",
-                "initial_value=50"
+                "initial_value=100",
+                "delta_t=0.005",
+                "total_time=1.5",
             ],
             "command": "./main",
             "group": {

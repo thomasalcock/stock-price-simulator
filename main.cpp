@@ -135,7 +135,7 @@ T parse_flag(std::string flag, std::string name, T min, T max)
             value = std::stod(flag_value);
         }
 
-        if (value <= min || value >= max)
+        if (value < min || value > max)
         {
             std::cerr << "Value of " << flag_value
                       << " of flag " << flag_name
@@ -160,7 +160,7 @@ int main(int argc, char *argv[])
     std::mt19937 engine(rd());
     std::uniform_real_distribution<> distr(0.0, 1.0);
     std::normal_distribution<> normal_distr(0.0, 1.0);
-    if (argc != 5)
+    if (argc != 7)
     {
         std::cerr << "Please specify the flags...\n";
         std::exit(1);
@@ -170,17 +170,17 @@ int main(int argc, char *argv[])
     std::string flag2 = argv[2];
     std::string flag3 = argv[3];
     std::string flag4 = argv[4];
+    std::string flag5 = argv[5];
+    std::string flag6 = argv[6];
 
-    auto n_paths = parse_flag<size_t>(flag, "n_paths", 1, 10);
+    auto n_paths = parse_flag<size_t>(flag, "n_paths", 1, 1000);
     auto mu = parse_flag<double>(flag2, "drift", 0.05, 0.1);
     auto sigma = parse_flag<double>(flag3, "volatility", 0.01, 0.08);
     auto initial_stock_price_value = parse_flag<double>(flag4, "initial_value", -100, 100);
+    auto delta_t = parse_flag<double>(flag5, "delta_t", 0.001, 0.1);
+    auto total_time = parse_flag<double>(flag6, "total_time", 0.1, 2.0);
 
-    double total_time = 1.0;
-    double delta_t = 0.1;
-
-    std::vector<vec_dbl>
-        paths(n_paths);
+    std::vector<vec_dbl> paths(n_paths);
     vec_dbl prices;
     for (size_t i; i < n_paths; ++i)
     {

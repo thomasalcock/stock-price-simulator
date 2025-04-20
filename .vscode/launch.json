@@ -9,7 +9,9 @@
         "n_paths=5",
         "drift=0.06",
         "volatility=-0.04",
-        "initial_value=50"
+        "initial_value=50",
+        "delta_t=0.005",
+        "total_time=1.5",
       ],
       "stopAtEntry": false,
       "externalConsole": false,
