@@ -4,6 +4,7 @@
 #include "simulation_utils.h"
 
 vec_dbl stochastic_process(
+    const StochasticProcessType type,
     const double initial_value,
     const double mu,
     const double sigma,
@@ -19,7 +20,21 @@ vec_dbl stochastic_process(
     for (size_t t = 1; t < N; ++t)
     {
         Z = dist(engine);
-        stock_prices[t] = stock_prices[t - 1] * exp((mu - (sigma * sigma) * 0.5) * delta_t + sigma * Z * sqrt(delta_t));
+        switch (type)
+        {
+        case brownian:
+            stock_prices[t] = stock_prices[t - 1] * exp((mu - (sigma * sigma) * 0.5) * delta_t + sigma * Z * sqrt(delta_t));
+            break;
+
+        case wiener:
+            stock_prices[t] = stock_prices[t - 1] * delta_t + Z * sqrt(delta_t);
+            break;
+
+        default:
+            std::cout << "Generating geometric brownian motion by default\n";
+            stock_prices[t] = stock_prices[t - 1] * exp((mu - (sigma * sigma) * 0.5) * delta_t + sigma * Z * sqrt(delta_t));
+            break;
+        }
     }
     return stock_prices;
 }

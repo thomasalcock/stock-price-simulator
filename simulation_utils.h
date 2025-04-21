@@ -4,10 +4,18 @@
 #include "types.h"
 #include <random>
 
+enum StochasticProcessType
+{
+    brownian,
+    wiener,
+};
+
 // Don't use auto because this will generate implicit template functions
 // which can lead to nasty linker errors that are hard to resolve
 
-vec_dbl stochastic_process(
+vec_dbl
+stochastic_process(
+    const StochasticProcessType type,
     const double initial_value,
     const double mu,
     const double sigma,

@@ -15,6 +15,11 @@ struct CommandLineArgs
 template <typename T>
 T parse_flag(std::string flag, T min, T max);
 
+template <typename T>
+void check_bounds(const std::string &flag_value,
+                  const std::string &flag_name,
+                  T value, T min, T max);
+
 CommandLineArgs handle_command_line_arguments(const int argc, char **argv);
 
 #endif

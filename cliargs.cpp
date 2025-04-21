@@ -29,15 +29,7 @@ T parse_flag(std::string flag, std::string name, T min, T max)
         {
             value = std::stod(flag_value);
         }
-
-        if (value < min || value > max)
-        {
-            std::cerr << "Value of " << flag_value
-                      << " of flag " << flag_name
-                      << " must be between "
-                      << min << " and " << max << "\n";
-            std::exit(1);
-        }
+        check_bounds(flag_value, flag_name, value, min, max);
     }
     catch (const std::invalid_argument &e)
     {
@@ -46,6 +38,21 @@ T parse_flag(std::string flag, std::string name, T min, T max)
         std::exit(1);
     }
     return value;
+}
+
+template <typename T>
+void check_bounds(const std::string &flag_value,
+                  const std::string &flag_name,
+                  T value, T min, T max)
+{
+    if (value < min || value > max)
+    {
+        std::cerr << "Value of " << flag_value
+                  << " of flag " << flag_name
+                  << " must be between "
+                  << min << " and " << max << "\n";
+        std::exit(1);
+    }
 }
 
 CommandLineArgs handle_command_line_arguments(const int argc, char **argv)
@@ -70,5 +77,6 @@ CommandLineArgs handle_command_line_arguments(const int argc, char **argv)
     cli_args.initial_stock_price_value = parse_flag<double>(flag4, "initial_value", -100, 100);
     cli_args.delta_t = parse_flag<double>(flag5, "delta_t", 0.001, 0.1);
     cli_args.total_time = parse_flag<double>(flag6, "total_time", 0.1, 2.0);
+    // cli_args.stochastic_process_type = parse_flag<std::string>(flag7, "stochastic_process_type", "", "");
     return cli_args;
 }
