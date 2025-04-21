@@ -5,6 +5,10 @@
 #include "cliargs.h"
 #include "simulation_utils.h"
 
+// TODO: disregard initial value from user whenever wiener process is chosen
+// TODO: output simulation results to a json file (name, current timestamp)
+// TODO: log program activity to file on disk
+
 int main(int argc, char *argv[])
 {
 
@@ -18,7 +22,7 @@ int main(int argc, char *argv[])
     std::vector<vec_dbl> paths(args.n_paths);
     vec_dbl prices;
 
-    for (size_t i; i < args.n_paths; ++i)
+    for (size_t i = 0; i < args.n_paths; ++i)
     {
         prices = stochastic_process(
             args.process_type,

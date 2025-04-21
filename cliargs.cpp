@@ -98,8 +98,7 @@ handle_command_line_arguments(const int argc, char **argv)
     std::string flag4 = argv[4];
     std::string flag5 = argv[5];
     std::string flag6 = argv[6];
-    // std::string flag7 = argv[7];
-    std::string flag7 = "process_type=wiener";
+    std::string flag7 = argv[7];
 
     CommandLineArgs cli_args;
 

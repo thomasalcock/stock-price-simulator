@@ -12,12 +12,12 @@
         "initial_value=50",
         "delta_t=0.005",
         "total_time=1.5",
-        "process_type=wiener"
+        "process_type=brownian"
       ],
       "stopAtEntry": false,
       "externalConsole": false,
       "cwd": "/home/thomas/projects/cpp_stuff/stats",
-      "program": "/home/thomas/projects/cpp_stuff/stats/main",
+      "program": "/home/thomas/projects/cpp_stuff/stats/simulator-debug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [

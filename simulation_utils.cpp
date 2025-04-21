@@ -17,25 +17,34 @@ vec_dbl stochastic_process(
     vec_dbl stock_prices(N, 0);
     stock_prices[0] = initial_value;
     double Z = 0;
-    for (size_t t = 1; t < N; ++t)
+    switch (type)
     {
-        Z = dist(engine);
-        switch (type)
+    case StochasticProcessType::brownian:
+        for (size_t t = 1; t < N; ++t)
         {
-        case StochasticProcessType::brownian:
+            Z = dist(engine);
             stock_prices[t] = stock_prices[t - 1] * exp((mu - (sigma * sigma) * 0.5) * delta_t + sigma * Z * sqrt(delta_t));
-            break;
-
-        case StochasticProcessType::wiener:
-            stock_prices[t] = stock_prices[t - 1] * delta_t + Z * sqrt(delta_t);
-            break;
-
-        default:
-            std::cout << "Generating geometric brownian motion by default\n";
-            stock_prices[t] = stock_prices[t - 1] * exp((mu - (sigma * sigma) * 0.5) * delta_t + sigma * Z * sqrt(delta_t));
-            break;
         }
+        break;
+
+    case StochasticProcessType::wiener:
+        for (size_t t = 1; t < N; ++t)
+        {
+            Z = dist(engine);
+            stock_prices[t] = stock_prices[t - 1] * delta_t + Z * sqrt(delta_t);
+        }
+        break;
+
+    default:
+        std::cout << "Generating geometric brownian motion by default\n";
+        for (size_t t = 1; t < N; ++t)
+        {
+            Z = dist(engine);
+            stock_prices[t] = stock_prices[t - 1] * exp((mu - (sigma * sigma) * 0.5) * delta_t + sigma * Z * sqrt(delta_t));
+        }
+        break;
     }
+
     return stock_prices;
 }
 
