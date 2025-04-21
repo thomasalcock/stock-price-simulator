@@ -17,12 +17,11 @@ int main(int argc, char *argv[])
 
     std::vector<vec_dbl> paths(args.n_paths);
     vec_dbl prices;
-    StochasticProcessType sp_type = brownian;
 
     for (size_t i; i < args.n_paths; ++i)
     {
         prices = stochastic_process(
-            sp_type,
+            args.process_type,
             args.initial_stock_price_value,
             args.mu,
             args.sigma,

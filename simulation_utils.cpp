@@ -22,11 +22,11 @@ vec_dbl stochastic_process(
         Z = dist(engine);
         switch (type)
         {
-        case brownian:
+        case StochasticProcessType::brownian:
             stock_prices[t] = stock_prices[t - 1] * exp((mu - (sigma * sigma) * 0.5) * delta_t + sigma * Z * sqrt(delta_t));
             break;
 
-        case wiener:
+        case StochasticProcessType::wiener:
             stock_prices[t] = stock_prices[t - 1] * delta_t + Z * sqrt(delta_t);
             break;
 

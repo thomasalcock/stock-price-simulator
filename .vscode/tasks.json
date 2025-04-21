@@ -38,6 +38,7 @@
                 "initial_value=100",
                 "delta_t=0.005",
                 "total_time=1.5",
+                "process_type=wiener"
             ],
             "command": "./main",
             "group": {

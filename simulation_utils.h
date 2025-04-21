@@ -4,7 +4,7 @@
 #include "types.h"
 #include <random>
 
-enum StochasticProcessType
+enum class StochasticProcessType
 {
     brownian,
     wiener,
