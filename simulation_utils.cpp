@@ -3,23 +3,6 @@
 #include <cmath>
 #include "simulation_utils.h"
 
-vec_dbl simulate_wiener_process(const double T,
-                                const double delta_t,
-                                std::normal_distribution<double> &dist,
-                                std::mt19937 &engine)
-{
-    size_t N = (size_t)T / delta_t;
-    std::printf("N = %ld, delta_t = %.2f, T = %.2f\n", N, delta_t, T);
-    vec_dbl values(N, 0);
-    double noise = 0;
-    for (size_t t = 0; t < N; ++t)
-    {
-        noise = dist(engine);
-        values[t + 1] = values[t] + noise * sqrt(delta_t);
-    }
-    return values;
-}
-
 vec_dbl stochastic_process(
     const double initial_value,
     const double mu,

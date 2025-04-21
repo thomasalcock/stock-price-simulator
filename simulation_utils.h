@@ -6,10 +6,6 @@
 
 // Don't use auto because this will generate implicit template functions
 // which can lead to nasty linker errors that are hard to resolve
-vec_dbl simulate_wiener_process(const double T,
-                                const double delta_t,
-                                std::normal_distribution<double> &dist,
-                                std::mt19937 &engine);
 
 vec_dbl stochastic_process(
     const double initial_value,
