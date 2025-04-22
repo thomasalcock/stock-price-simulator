@@ -2,6 +2,8 @@
 #include <cmath>
 #include <random>
 #include <vector>
+#include <fstream>
+
 #include "cliargs.h"
 #include "simulation_utils.h"
 
@@ -22,6 +24,8 @@ int main(int argc, char *argv[])
     std::vector<vec_dbl> paths(args.n_paths);
     vec_dbl prices;
 
+    std::ofstream output_file("output.csv");
+
     for (size_t i = 0; i < args.n_paths; ++i)
     {
         prices = stochastic_process(
@@ -32,10 +36,26 @@ int main(int argc, char *argv[])
             args.total_time,
             args.delta_t,
             normal_distr, engine);
-
         paths[i] = prices;
     }
+
+    for (size_t path_index = 0; path_index < paths.size(); ++path_index)
+    {
+        output_file << "path_" << path_index << ";";
+    }
+    output_file << "\n";
+    for (size_t price_index = 0; price_index < paths[0].size(); ++price_index)
+    {
+        for (size_t path_index = 0; path_index < paths.size(); ++path_index)
+        {
+            output_file << paths[path_index][price_index] << ";";
+        }
+        output_file << "\n";
+    }
+
     print_stock_prices(paths);
     auto avg = average_path(paths);
+
+    output_file.close();
     print_stock_price(avg);
 }
