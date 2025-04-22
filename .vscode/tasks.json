@@ -4,56 +4,12 @@
         {
             "label": "build-debug",
             "type": "shell",
-            "command": "g++",
-            "args": [
-                "-g",
-                "-std=c++20",
-                "-Wall",
-                "-Werror",
-                "-Wextra",
-                "-Wpedantic",
-                "-pedantic-errors",
-                "-o",
-                "simulator-debug",
-                "main.cpp",
-                "cliargs.cpp",
-                "simulation_utils.cpp",
-            ],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
-            "problemMatcher": [
-                "$gcc"
-            ],
-            "detail": "Generated task by the C++ extension."
+            "command": "./build.sh Debug"
         },
         {
             "label": "build-release",
             "type": "shell",
-            "command": "g++",
-            "args": [
-                "-O3",
-                "-std=c++20",
-                "-Wall",
-                "-Werror",
-                "-Wextra",
-                "-Wpedantic",
-                "-pedantic-errors",
-                "-o",
-                "simulator-release",
-                "main.cpp",
-                "cliargs.cpp",
-                "simulation_utils.cpp",
-            ],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
-            "problemMatcher": [
-                "$gcc"
-            ],
-            "detail": "Generated task by the C++ extension."
+            "command": "./build.sh Release"
         },
         {
             "label": "run",
@@ -68,7 +24,7 @@
                 "process_type=brownian",
                 "output_file_name=new_results.csv"
             ],
-            "command": "./simulator-release",
+            "command": "./build/release/simulator-release",
             "group": {
                 "kind": "test",
                 "isDefault": true
