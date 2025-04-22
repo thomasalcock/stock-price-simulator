@@ -12,7 +12,8 @@
         "initial_value=50",
         "delta_t=0.005",
         "total_time=1.5",
-        "process_type=brownian"
+        "process_type=brownian",
+        "output_file_name=results.csv"
       ],
       "stopAtEntry": false,
       "externalConsole": false,

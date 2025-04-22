@@ -13,6 +13,7 @@ struct CommandLineArgs
     double delta_t;
     double total_time;
     StochasticProcessType process_type;
+    std::string output_file_name;
 };
 template <typename T>
 T parse_flag(std::string flag, T min, T max);
@@ -24,6 +25,8 @@ template <typename T>
 void check_bounds(const std::string &flag_value,
                   const std::string &flag_name,
                   T value, T min, T max);
+
+std::pair<std::string, std::string> split_string(const std::string &input, char split_char);
 
 StochasticProcessType convert_string_to_sp_type(const std::string &input);
 

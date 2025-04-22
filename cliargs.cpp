@@ -2,6 +2,8 @@
 #include <iostream>
 #include <unordered_map>
 #include <utility>
+#include <set>
+
 #include "cliargs.h"
 #include "simulation_utils.h"
 
@@ -52,6 +54,21 @@ std::pair<std::string, std::string> parse_string_flag(const std::string flag, st
     return std::make_pair(flag_name, flag_value);
 }
 
+std::pair<std::string, std::string> split_string(const std::string &input, char split_char)
+{
+    size_t delimiter_position = input.find(split_char);
+    if (delimiter_position == std::string::npos)
+    {
+        std::cerr << "Error splitting " << input << " by character " << split_char << "\n";
+        std::exit(1);
+    }
+    std::pair<std::string, std::string> values;
+    values.first = input.substr(0, delimiter_position);
+    values.second = input.substr(delimiter_position + 1, input.size());
+    std::cout << "Split " << input << " into " << values.first << " and " << values.second << "\n";
+    return values;
+}
+
 template <typename T>
 void check_bounds(const std::string &flag_value,
                   const std::string &flag_name,
@@ -83,34 +100,52 @@ StochasticProcessType convert_string_to_sp_type(const std::string &input)
     }
 }
 
+void check_file_ext(const std::string &input)
+{
+    std::set<std::string> accepted_file_extensions = {"csv", "txt"};
+
+    std::pair<std::string, std::string> split_values = split_string(input, '.');
+    if (accepted_file_extensions.find(split_values.second) == accepted_file_extensions.end())
+    {
+        std::cerr << "File extension must be csv or txt\n";
+        std::exit(1);
+    }
+}
+
 CommandLineArgs
 handle_command_line_arguments(const int argc, char **argv)
 {
-    if (argc != 8)
+    if (argc != 9)
     {
         std::cerr << "Please specify the flags...\n";
         std::exit(1);
     }
 
-    std::string flag = argv[1];
-    std::string flag2 = argv[2];
-    std::string flag3 = argv[3];
-    std::string flag4 = argv[4];
-    std::string flag5 = argv[5];
-    std::string flag6 = argv[6];
-    std::string flag7 = argv[7];
+    std::string n_paths_flag = argv[1];
+    std::string drift_flag = argv[2];
+    std::string volatility_flag = argv[3];
+    std::string init_price_flag = argv[4];
+    std::string delta_t_flag = argv[5];
+    std::string total_time_flag = argv[6];
+    std::string process_type_flag = argv[7];
+    std::string output_file_flag = argv[8];
 
     CommandLineArgs cli_args;
 
-    auto type_flag = parse_string_flag(flag7, "process_type");
-    cli_args.process_type = convert_string_to_sp_type(type_flag.second);
+    std::string type_flag = parse_string_flag(process_type_flag, "process_type").second;
+    cli_args.process_type = convert_string_to_sp_type(type_flag);
 
-    cli_args.n_paths = parse_flag<size_t>(flag, "n_paths", 1, 1000);
-    cli_args.mu = parse_flag<double>(flag2, "drift", 0.05, 0.1);
-    cli_args.sigma = parse_flag<double>(flag3, "volatility", 0.01, 0.08);
-    cli_args.initial_stock_price_value = parse_flag<double>(flag4, "initial_value", -100, 100);
-    cli_args.delta_t = parse_flag<double>(flag5, "delta_t", 0.001, 0.1);
-    cli_args.total_time = parse_flag<double>(flag6, "total_time", 0.1, 2.0);
+    std::string output_file_value = parse_string_flag(output_file_flag, "output_file_name").second;
+    check_file_ext(output_file_value);
+
+    cli_args.output_file_name = output_file_value;
+
+    cli_args.n_paths = parse_flag<size_t>(n_paths_flag, "n_paths", 1, 1000);
+    cli_args.mu = parse_flag<double>(drift_flag, "drift", 0.05, 0.1);
+    cli_args.sigma = parse_flag<double>(volatility_flag, "volatility", 0.01, 0.08);
+    cli_args.initial_stock_price_value = parse_flag<double>(init_price_flag, "initial_value", -100, 100);
+    cli_args.delta_t = parse_flag<double>(delta_t_flag, "delta_t", 0.001, 0.1);
+    cli_args.total_time = parse_flag<double>(total_time_flag, "total_time", 0.1, 2.0);
 
     return cli_args;
 }

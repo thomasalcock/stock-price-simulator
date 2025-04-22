@@ -7,8 +7,7 @@
 #include "cliargs.h"
 #include "simulation_utils.h"
 
-// TODO: disregard initial value from user whenever wiener process is chosen
-// TODO: output simulation results to a json file (name, current timestamp)
+// TODO: output simulation results to a csv file (name, current timestamp)
 // TODO: log program activity to file on disk
 
 int main(int argc, char *argv[])
@@ -24,7 +23,7 @@ int main(int argc, char *argv[])
     std::vector<vec_dbl> paths(args.n_paths);
     vec_dbl prices;
 
-    std::ofstream output_file("output.csv");
+    std::ofstream output_file(args.output_file_name);
 
     for (size_t i = 0; i < args.n_paths; ++i)
     {
@@ -39,22 +38,23 @@ int main(int argc, char *argv[])
         paths[i] = prices;
     }
 
+    auto avg = average_path(paths);
     for (size_t path_index = 0; path_index < paths.size(); ++path_index)
     {
-        output_file << "path_" << path_index << ";";
+        output_file << "path_" << path_index + 1 << ";";
     }
-    output_file << "\n";
+    output_file << "average_path;\n";
     for (size_t price_index = 0; price_index < paths[0].size(); ++price_index)
     {
         for (size_t path_index = 0; path_index < paths.size(); ++path_index)
         {
             output_file << paths[path_index][price_index] << ";";
         }
-        output_file << "\n";
+
+        output_file << avg[price_index] << "\n";
     }
 
     print_stock_prices(paths);
-    auto avg = average_path(paths);
 
     output_file.close();
     print_stock_price(avg);
