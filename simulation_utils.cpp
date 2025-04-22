@@ -15,11 +15,11 @@ vec_dbl stochastic_process(
 {
     size_t N = (size_t)T / delta_t;
     vec_dbl stock_prices(N, 0);
-    stock_prices[0] = initial_value;
     double Z = 0;
     switch (type)
     {
     case StochasticProcessType::brownian:
+        stock_prices[0] = initial_value;
         for (size_t t = 1; t < N; ++t)
         {
             Z = dist(engine);
@@ -28,6 +28,7 @@ vec_dbl stochastic_process(
         break;
 
     case StochasticProcessType::wiener:
+        stock_prices[0] = 0;
         for (size_t t = 1; t < N; ++t)
         {
             Z = dist(engine);
@@ -36,6 +37,7 @@ vec_dbl stochastic_process(
         break;
 
     default:
+        stock_prices[0] = initial_value;
         std::cout << "Generating geometric brownian motion by default\n";
         for (size_t t = 1; t < N; ++t)
         {
