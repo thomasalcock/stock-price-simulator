@@ -24,12 +24,11 @@
                 "process_type=brownian",
                 "output_file_name=new_results.csv"
             ],
-            "command": "./build/release/simulator-release",
+            "command": "./build/release/stock-price-simulator",
             "group": {
                 "kind": "test",
                 "isDefault": true
             },
-            "dependsOn": "build-release"
         }
     ]
 }
