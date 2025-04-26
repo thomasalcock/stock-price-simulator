@@ -1,10 +1,21 @@
-Build the project my installing cmake (minimum version 3.22.1) and then run:
+System Dependencies:
+- libglfw3
+- opengl3
+- cmake (minimum version 3.22.1)
 
-./build.sh Debug
-./build.sh Release
+Build the stock-price-simulator-gui:
+
+./build.sh Debug stock-price-simulator-gui
+./build.sh Release stock-price-simulator-gui
+
+Build the stock-price-simulator-cli:
+
+./build.sh Debug stock-price-simulator-cli
+./build.sh Release stock-price-simulator-cli
 
 Usage:
 
+./build/release/stock-price-simulator-gui
 ./build/release/stock-price-simulator n_paths=3 \
                 drift=0.06 \
                 volatility=0.04 \
