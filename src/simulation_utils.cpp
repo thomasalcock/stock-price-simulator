@@ -3,6 +3,38 @@
 #include <cmath>
 #include "simulation_utils.h"
 
+void run_simulation(std::vector<vec_dbl> &paths,
+                    vec_dbl &avg,
+                    const size_t n_paths,
+                    const StochasticProcessType process_type,
+                    const double mu,
+                    const double sigma,
+                    const double delta_t,
+                    const double total_time,
+                    const double initial_stock_price_value)
+{
+    std::random_device rd;
+    std::mt19937 engine(rd());
+    std::uniform_real_distribution<> distr(0.0, 1.0);
+    std::normal_distribution<> normal_distr(0.0, 1.0);
+
+    vec_dbl prices;
+    for (size_t i = 0; i < n_paths; ++i)
+    {
+        prices = stochastic_process(
+            process_type,
+            initial_stock_price_value,
+            mu,
+            sigma,
+            total_time,
+            delta_t,
+            normal_distr, engine);
+        paths[i] = prices;
+    }
+
+    avg = average_path(paths);
+}
+
 vec_dbl stochastic_process(
     const StochasticProcessType type,
     const double initial_value,

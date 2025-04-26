@@ -13,6 +13,16 @@ enum class StochasticProcessType
 // Don't use auto because this will generate implicit template functions
 // which can lead to nasty linker errors that are hard to resolve
 
+void run_simulation(std::vector<vec_dbl> &paths,
+                    vec_dbl &avg,
+                    const size_t n_paths,
+                    const StochasticProcessType process_type,
+                    const double mu,
+                    const double sigma,
+                    const double delta_t,
+                    const double total_time,
+                    const double initial_stock_price_value);
+
 vec_dbl
 stochastic_process(
     const StochasticProcessType type,
