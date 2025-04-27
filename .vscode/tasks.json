@@ -22,7 +22,7 @@
             "command": "./build.sh Release stock-price-simulator-cli"
         },
         {
-            "label": "run",
+            "label": "run-cli",
             "type": "shell",
             "args": [
                 "n_paths=3",
@@ -34,11 +34,12 @@
                 "process_type=brownian",
                 "output_file_name=new_results.csv"
             ],
-            "command": "./build/release/stock-price-simulator",
+            "command": "./build/release/stock-price-simulator-cli",
             "group": {
                 "kind": "test",
                 "isDefault": true
             },
+            "dependsOn": "build-release-cli"
         }
     ]
 }
