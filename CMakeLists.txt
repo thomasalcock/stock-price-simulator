@@ -14,31 +14,39 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/release)
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -Werror -Wextra -Wpedantic -pedantic-errors -g -O0 -fsanitize=address")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2 -DNDEBUG -static")
 
-set(SOURCES_CLI src/main.cpp src/cliargs.cpp src/simulation_utils.cpp)
-set(SOURCES_GUI src/gui.cpp src/simulation_utils.cpp)
+set(SOURCES_CLI src/main.cpp src/cliargs.cpp)
+set(SOURCES_GUI src/gui.cpp)
 
+add_library(stock-price-simulator-utils STATIC src/simulation_utils.cpp)
 add_executable(stock-price-simulator-cli ${SOURCES_CLI})
+target_link_libraries(stock-price-simulator-cli PUBLIC stock-price-simulator-utils)
 
 message(STATUS "OpenGL Libraries: ${OPENGL_LIBRARIES}")
 message(STATUS "GLFW Found: ${glfw3_FOUND}")
 
 if (glfw3_FOUND AND OpenGL_FOUND)
 
-    set(SOURCES_IMGUI dependencies/imgui/imgui.cpp
-                    dependencies/imgui/imgui_draw.cpp
-                    dependencies/imgui/imgui_demo.cpp
-                    dependencies/imgui/imgui_tables.cpp
-                    dependencies/imgui/imgui_widgets.cpp
-                    dependencies/imgui/backends/imgui_impl_glfw.cpp
-                    dependencies/imgui/backends/imgui_impl_opengl3.cpp)
+    # Create a static library for ImGui
+    add_library(imgui STATIC
+        dependencies/imgui/imgui.cpp
+        dependencies/imgui/imgui_draw.cpp
+        dependencies/imgui/imgui_demo.cpp
+        dependencies/imgui/imgui_tables.cpp
+        dependencies/imgui/imgui_widgets.cpp
+        dependencies/imgui/backends/imgui_impl_glfw.cpp
+        dependencies/imgui/backends/imgui_impl_opengl3.cpp
+    )
 
-    include_directories(dependencies/imgui)
-    include_directories(dependencies/imgui/backends)
-    include_directories(dependencies/imgui/misc)
+    target_include_directories(imgui PUBLIC
+        dependencies/imgui
+        dependencies/imgui/backends
+        dependencies/imgui/misc
+    )
 
-    add_executable(stock-price-simulator-gui ${SOURCES_GUI} ${SOURCES_IMGUI})
+    add_executable(stock-price-simulator-gui ${SOURCES_GUI})
 
-    target_link_libraries(stock-price-simulator-gui glfw OpenGL X11)
+    # Link the ImGui library to the GUI executable
+    target_link_libraries(stock-price-simulator-gui stock-price-simulator-utils glfw OpenGL X11 imgui)
 
 else()
     message(FATAL_ERROR "GLFW or OpenGL not found!")
