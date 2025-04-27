@@ -29,6 +29,7 @@ if (glfw3_FOUND AND OpenGL_FOUND)
     # Create a static library for ImGui
     add_library(imgui STATIC
         dependencies/imgui/imgui.cpp
+        dependencies/imgui/misc/cpp/imgui_stdlib.cpp
         dependencies/imgui/imgui_draw.cpp
         dependencies/imgui/imgui_demo.cpp
         dependencies/imgui/imgui_tables.cpp
@@ -41,6 +42,7 @@ if (glfw3_FOUND AND OpenGL_FOUND)
         dependencies/imgui
         dependencies/imgui/backends
         dependencies/imgui/misc
+        dependencies/imgui/misc/cpp
     )
 
     add_executable(stock-price-simulator-gui ${SOURCES_GUI})

@@ -17,4 +17,6 @@ int main(int argc, char *argv[])
 
     print_stock_prices(paths);
     print_stock_price(mean_path);
+
+    save_csv_file(args.output_file_name, paths, mean_path);
 }

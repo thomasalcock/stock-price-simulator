@@ -27,6 +27,7 @@ void save_csv_file(const std::string &output_file_name,
     }
 
     output_file.close();
+    std::cout << output_file_name << " closed\n";
 }
 
 int run_simulation(std::vector<vec_dbl> &paths,
