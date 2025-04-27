@@ -11,6 +11,7 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include <stdio.h>
+#include <iostream>
 #include "simulation_utils.h"
 
 #define GL_SILENCE_DEPRECATION
@@ -125,6 +126,11 @@ int main(int, char **)
     static double initial_value = 100;
     static bool start_simulation = false;
     static bool save_file = false;
+    static int finished = 1;
+    static std::vector<vec_dbl> simulated_paths;
+    static vec_dbl mean_path;
+    static size_t clicks_on_sim_button = 0;
+    static char file_name[255];
 
     // Main loop
 #ifdef __EMSCRIPTEN__
@@ -168,6 +174,8 @@ int main(int, char **)
             ImGui::Columns(2, "columns");
             ImGui::Text("Settings");
 
+            // TODO: leak sanitizer encountered a fatal error after closing the application and previously saving a file
+            // TODO: file picker window??
             ImGui::SetNextItemWidth(150.f);
             ImGui::InputInt("Number of paths", &n_paths, 1, 100);
             ImGui::SetNextItemWidth(150.f);
@@ -179,26 +187,36 @@ int main(int, char **)
             ImGui::SetNextItemWidth(150.f);
             ImGui::InputDouble("Delta time", &delta_t, 0.01, 0.01);
 
-            ImGui::NextColumn();
+            ImGui::InputText("Output file name", file_name, 255);
             start_simulation = ImGui::Button("Start simulation", ImVec2(150, 60));
             save_file = ImGui::Button("Save as .csv file", ImVec2(150, 60));
 
             if (start_simulation)
             {
-                printf("Running simulation\n");
-                std::vector<vec_dbl> simulated_paths(n_paths);
-                vec_dbl mean_path;
+                clicks_on_sim_button++;
+                std::cout << "Running simulation\n";
+                if (simulated_paths.size() == 0 || clicks_on_sim_button == 1)
+                {
+                    simulated_paths.resize(n_paths);
+                }
+                else
+                {
+                    std::cout << "shrinking the simulated paths vector to fit " << n_paths << " paths\n";
+                    simulated_paths.clear();
+                    simulated_paths.resize(n_paths);
+                }
 
-                run_simulation(simulated_paths, mean_path, n_paths,
-                               StochasticProcessType::brownian, mu, sigma,
-                               delta_t, total_time, initial_value);
+                finished = run_simulation(simulated_paths, mean_path, n_paths,
+                                          StochasticProcessType::brownian, mu, sigma,
+                                          delta_t, total_time, initial_value);
 
                 print_stock_prices(simulated_paths);
             }
 
-            if (save_file)
+            if (save_file && finished == 0)
             {
-                printf("Saving file\n");
+                std::cout << "Saving file\n";
+                save_csv_file(file_name, simulated_paths, mean_path);
             }
 
             // ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)

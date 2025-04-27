@@ -1,17 +1,43 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
+#include <fstream>
 #include "simulation_utils.h"
 
-void run_simulation(std::vector<vec_dbl> &paths,
-                    vec_dbl &avg,
-                    const size_t n_paths,
-                    const StochasticProcessType process_type,
-                    const double mu,
-                    const double sigma,
-                    const double delta_t,
-                    const double total_time,
-                    const double initial_stock_price_value)
+void save_csv_file(const std::string &output_file_name,
+                   const std::vector<vec_dbl> &paths,
+                   const vec_dbl &mean_path)
+{
+    // TODO: add timestamp to filename
+    std::ofstream output_file(output_file_name);
+
+    for (size_t path_index = 0; path_index < paths.size(); ++path_index)
+    {
+        output_file << "path_" << path_index + 1 << ";";
+    }
+    output_file << "average_path;\n";
+    for (size_t price_index = 0; price_index < paths[0].size(); ++price_index)
+    {
+        for (size_t path_index = 0; path_index < paths.size(); ++path_index)
+        {
+            output_file << paths[path_index][price_index] << ";";
+        }
+
+        output_file << mean_path[price_index] << "\n";
+    }
+
+    output_file.close();
+}
+
+int run_simulation(std::vector<vec_dbl> &paths,
+                   vec_dbl &avg,
+                   const size_t n_paths,
+                   const StochasticProcessType process_type,
+                   const double mu,
+                   const double sigma,
+                   const double delta_t,
+                   const double total_time,
+                   const double initial_stock_price_value)
 {
     std::random_device rd;
     std::mt19937 engine(rd());
@@ -33,6 +59,7 @@ void run_simulation(std::vector<vec_dbl> &paths,
     }
 
     avg = average_path(paths);
+    return 0;
 }
 
 vec_dbl stochastic_process(
