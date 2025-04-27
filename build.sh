@@ -1,10 +1,10 @@
 #!/bin/bash
 
-if [ -d "build" ]; then
-    rm -r build && mkdir build
-else 
-    mkdir build
-fi
+# if [ -d "build" ]; then
+#     rm -r build && mkdir build
+# else 
+#     mkdir build
+# fi
 
 if [ $1 = "Debug" ]; then
     cd build && \
