@@ -2,14 +2,24 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "build-debug",
+            "label": "build-debug-gui",
             "type": "shell",
-            "command": "./build.sh Debug"
+            "command": "./build.sh Debug stock-price-simulator-gui"
         },
         {
-            "label": "build-release",
+            "label": "build-debug-cli",
             "type": "shell",
-            "command": "./build.sh Release"
+            "command": "./build.sh Debug stock-price-simulator-cli"
+        },
+        {
+            "label": "build-release-gui",
+            "type": "shell",
+            "command": "./build.sh Release stock-price-simulator-gui"
+        },
+        {
+            "label": "build-release-cli",
+            "type": "shell",
+            "command": "./build.sh Release stock-price-simulator-cli"
         },
         {
             "label": "run",
