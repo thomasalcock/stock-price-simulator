@@ -4,7 +4,8 @@
         {
             "label": "build-debug-gui",
             "type": "shell",
-            "command": "./build.sh Debug stock-price-simulator-gui"
+            "command": "./build.sh Debug stock-price-simulator-gui",
+            "problemMatcher": []
         },
         {
             "label": "build-debug-cli",

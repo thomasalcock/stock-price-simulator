@@ -7,6 +7,7 @@
 // - Documentation        https://dearimgui.com/docs (same as your local docs/ folder).
 // - Introduction, links and more at the top of imgui.cpp
 
+#include "implot.h"
 #include "imgui.h"
 #include "imgui_stdlib.h"
 #include "imgui_impl_glfw.h"
@@ -85,6 +86,7 @@ int main(int, char **)
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
+    ImPlot::CreateContext();
     ImGuiIO &io = ImGui::GetIO();
     (void)io;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
@@ -207,6 +209,21 @@ int main(int, char **)
                 print_stock_prices(simulated_paths);
             }
 
+            if (finished == 0)
+            {
+
+                vec_dbl x;
+                for (size_t i = 1; i <= mean_path.size(); ++i)
+                    x.push_back(i);
+
+                ImGui::NextColumn();
+                if (ImPlot::BeginPlot("Mean Path"))
+                {
+                    ImPlot::PlotLine("Mean Path", x.data(), mean_path.data(), mean_path.size());
+                    ImPlot::EndPlot();
+                }
+            }
+
             if (save_file && finished == 0)
             {
                 std::cout << "Saving file\n";
@@ -232,6 +249,7 @@ int main(int, char **)
     // Cleanup
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
+    ImPlot::DestroyContext();
     ImGui::DestroyContext();
 
     glfwDestroyWindow(window);

@@ -26,7 +26,6 @@ message(STATUS "GLFW Found: ${glfw3_FOUND}")
 
 if (glfw3_FOUND AND OpenGL_FOUND)
 
-    # Create a static library for ImGui
     add_library(imgui STATIC
         dependencies/imgui/imgui.cpp
         dependencies/imgui/misc/cpp/imgui_stdlib.cpp
@@ -38,6 +37,13 @@ if (glfw3_FOUND AND OpenGL_FOUND)
         dependencies/imgui/backends/imgui_impl_opengl3.cpp
     )
 
+    add_library(
+        implot STATIC 
+        dependencies/implot/implot.cpp
+        dependencies/implot/implot_items.cpp
+    )
+
+    # Include directories for ImGui
     target_include_directories(imgui PUBLIC
         dependencies/imgui
         dependencies/imgui/backends
@@ -45,10 +51,19 @@ if (glfw3_FOUND AND OpenGL_FOUND)
         dependencies/imgui/misc/cpp
     )
 
+    # Include directories for Implot, also include ImGui's directories
+    target_include_directories(implot PUBLIC
+        dependencies/implot
+        ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/imgui  # Add ImGui include path
+        ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/imgui/backends
+        ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/imgui/misc
+        ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/imgui/misc/cpp
+    )
+
     add_executable(stock-price-simulator-gui ${SOURCES_GUI})
 
     # Link the ImGui library to the GUI executable
-    target_link_libraries(stock-price-simulator-gui stock-price-simulator-utils glfw OpenGL X11 imgui)
+    target_link_libraries(stock-price-simulator-gui stock-price-simulator-utils glfw OpenGL X11 imgui implot)
 
 else()
     message(FATAL_ERROR "GLFW or OpenGL not found!")
