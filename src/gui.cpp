@@ -138,6 +138,7 @@ int main(int, char **)
     static bool n_paths_changed, delta_t_changed, total_time_changed;
     static size_t n_iterations;
     static vec_dbl returns;
+    static int n_bins = 50;
 
     // Main loop
 #ifdef __EMSCRIPTEN__
@@ -191,6 +192,8 @@ int main(int, char **)
 
             delta_t_changed = ImGui::InputDouble("Delta time", &delta_t, 0.01, 0.01);
 
+            ImGui::InputInt("Number of bins", &n_bins);
+
             ImGui::InputText("file name", &file_name);
             start_simulation = ImGui::Button("Start simulation", ImVec2(150, 60));
             save_file = ImGui::Button("Save as .csv file", ImVec2(150, 60));
@@ -238,7 +241,7 @@ int main(int, char **)
                 std::cout << finished << std::endl;
             }
 
-            // TODO: fix heap buffer overflow. happens when the number of paths is updatd in the gui
+            // TODO: explore why scrolling suffers when there are many paths
             ImGui::NextColumn();
             if (finished == 0)
             {
@@ -257,7 +260,7 @@ int main(int, char **)
 
                 if (ImPlot::BeginPlot("Log Returns", ImVec2(-1, 0), ImPlotFlags_NoLegend))
                 {
-                    ImPlot::PlotHistogram("", returns.data(), returns.size(), n_paths / 10);
+                    ImPlot::PlotHistogram("", returns.data(), returns.size(), n_bins);
                     ImPlot::EndPlot();
                 }
             }
