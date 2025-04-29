@@ -4,6 +4,7 @@
 #include "simulation_utils.h"
 
 // TODO: log program activity to file on disk
+// TODO: rewrite program after introducing void functions
 
 int main(int argc, char *argv[])
 {

@@ -134,6 +134,9 @@ int main(int, char **)
     static vec_dbl mean_path;
     static size_t clicks_on_sim_button = 0;
     static std::string file_name;
+    static vec_dbl index;
+    static bool n_paths_changed, delta_t_changed, total_time_changed;
+    static size_t n_iterations;
 
     // Main loop
 #ifdef __EMSCRIPTEN__
@@ -173,53 +176,75 @@ int main(int, char **)
             // TODO: leak sanitizer encountered a fatal error after closing the application and previously saving a file
             // TODO: file picker window??
             ImGui::SetNextItemWidth(150.f);
-            ImGui::InputInt("Number of paths", &n_paths, 1, 100);
+            n_paths_changed = ImGui::InputInt("Number of paths", &n_paths, 1, 100);
             ImGui::SetNextItemWidth(150.f);
+
             ImGui::InputDouble("Drift", &mu, 0.01, 0.01);
             ImGui::SetNextItemWidth(150.f);
+
             ImGui::InputDouble("Volatilty", &sigma, 0.01, 0.01);
             ImGui::SetNextItemWidth(150.f);
-            ImGui::InputDouble("Total time", &total_time, 0.01, 0.01);
+
+            total_time_changed = ImGui::InputDouble("Total time", &total_time, 0.01, 0.01);
             ImGui::SetNextItemWidth(150.f);
-            ImGui::InputDouble("Delta time", &delta_t, 0.01, 0.01);
+
+            delta_t_changed = ImGui::InputDouble("Delta time", &delta_t, 0.01, 0.01);
 
             ImGui::InputText("file name", &file_name);
             start_simulation = ImGui::Button("Start simulation", ImVec2(150, 60));
             save_file = ImGui::Button("Save as .csv file", ImVec2(150, 60));
 
+            // lesson here is to allocate memory based on user input BEFORE attempting to access data#
+            // and draw it to the screen
+            if (start_simulation || n_paths_changed || total_time_changed || delta_t_changed)
+            {
+                n_iterations = determine_n_steps(total_time, delta_t);
+
+                simulated_paths.resize(n_paths);
+                for (vec_dbl &path : simulated_paths)
+                {
+                    path.clear();
+                    path.resize(n_iterations);
+                }
+                mean_path.clear();
+                mean_path.resize(n_iterations);
+
+                index.resize(n_iterations);
+                for (size_t i = 0; i < n_iterations; i++)
+                {
+                    index[i] = i;
+                }
+            }
+
             if (start_simulation)
             {
                 clicks_on_sim_button++;
                 std::cout << "Running simulation\n";
-                if (simulated_paths.size() == 0 || clicks_on_sim_button == 1)
-                {
-                    simulated_paths.resize(n_paths);
-                }
-                else
-                {
-                    std::cout << "shrinking the simulated paths vector to fit " << n_paths << " paths\n";
-                    simulated_paths.clear();
-                    simulated_paths.resize(n_paths);
-                }
 
-                finished = run_simulation(simulated_paths, mean_path, n_paths,
+                finished = run_simulation(simulated_paths, mean_path, n_iterations, n_paths,
                                           StochasticProcessType::brownian, mu, sigma,
-                                          delta_t, total_time, initial_value);
+                                          delta_t, initial_value);
 
+                std::cout << "simulated " << n_paths << " paths\n";
+                std::cout << finished << std::endl;
                 print_stock_prices(simulated_paths);
             }
 
+            // TODO: fix heap buffer overflow. happens when the number of paths is updatd in the gui
+            ImGui::NextColumn();
             if (finished == 0)
             {
-
-                vec_dbl x;
-                for (size_t i = 1; i <= mean_path.size(); ++i)
-                    x.push_back(i);
-
-                ImGui::NextColumn();
-                if (ImPlot::BeginPlot("Mean Path"))
+                if (ImPlot::BeginPlot("Simulated Paths"))
                 {
-                    ImPlot::PlotLine("Mean Path", x.data(), mean_path.data(), mean_path.size());
+                    // if (index.size() > 0 || index.capacity() > 0)
+                    // {
+                    //     index.clear();
+                    // }
+                    for (size_t plot_index = 0; plot_index < (size_t)n_paths; ++plot_index)
+                    {
+                        ImPlot::PlotLine("", index.data(), simulated_paths[plot_index].data(), index.size());
+                    }
+                    ImPlot::PlotLine("Mean Path", index.data(), mean_path.data(), index.size());
                     ImPlot::EndPlot();
                 }
             }

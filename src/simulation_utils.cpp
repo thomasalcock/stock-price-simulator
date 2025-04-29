@@ -32,12 +32,12 @@ void save_csv_file(const std::string &output_file_name,
 
 int run_simulation(std::vector<vec_dbl> &paths,
                    vec_dbl &avg,
+                   const size_t n_iterations,
                    const size_t n_paths,
                    const StochasticProcessType process_type,
                    const double mu,
                    const double sigma,
                    const double delta_t,
-                   const double total_time,
                    const double initial_stock_price_value)
 {
     std::random_device rd;
@@ -45,36 +45,46 @@ int run_simulation(std::vector<vec_dbl> &paths,
     std::uniform_real_distribution<> distr(0.0, 1.0);
     std::normal_distribution<> normal_distr(0.0, 1.0);
 
-    vec_dbl prices;
+    vec_dbl prices(n_iterations);
     for (size_t i = 0; i < n_paths; ++i)
     {
-        prices = stochastic_process(
+        stochastic_process(
+            prices,
+            n_iterations,
             process_type,
             initial_stock_price_value,
             mu,
             sigma,
-            total_time,
             delta_t,
             normal_distr, engine);
+
         paths[i] = prices;
     }
 
-    avg = average_path(paths);
+    average_path(avg, paths, n_paths, n_iterations);
     return 0;
 }
 
-vec_dbl stochastic_process(
+size_t determine_n_steps(const double T, const double delta_t)
+{
+    size_t N = (size_t)T / delta_t;
+    return N;
+}
+
+// TODO: this doesn't really work for a GUI because the user changes inputs within the same session
+// which means vectors need to be resized. This function doesn't do that very well.
+// I think it'l be much easier to allocate, size the vector upfront and then  pass it to the function
+void stochastic_process(
+    vec_dbl &stock_prices,
+    const size_t N,
     const StochasticProcessType type,
     const double initial_value,
     const double mu,
     const double sigma,
-    const double T,
     const double delta_t,
     std::normal_distribution<double> &dist,
     std::mt19937 &engine)
 {
-    size_t N = (size_t)T / delta_t;
-    vec_dbl stock_prices(N, 0);
     double Z = 0;
     switch (type)
     {
@@ -106,8 +116,6 @@ vec_dbl stochastic_process(
         }
         break;
     }
-
-    return stock_prices;
 }
 
 void print_stock_prices(const std::vector<vec_dbl> &values)
@@ -133,11 +141,12 @@ void print_stock_price(const vec_dbl &values)
     std::cout << "\n";
 }
 
-vec_dbl average_path(const std::vector<vec_dbl> &values)
+void average_path(
+    vec_dbl &averages,
+    const std::vector<vec_dbl> &values,
+    const size_t NPATHS,
+    const size_t N)
 {
-    size_t N = values[0].size();
-    vec_dbl averages(N);
-    size_t NPATHS = values.size();
     double sum = 0;
     for (size_t i = 0; i < N; ++i)
     {
@@ -148,5 +157,4 @@ vec_dbl average_path(const std::vector<vec_dbl> &values)
         averages[i] = sum / NPATHS;
         sum = 0;
     }
-    return averages;
 }
