@@ -137,6 +137,7 @@ int main(int, char **)
     static vec_dbl index;
     static bool n_paths_changed, delta_t_changed, total_time_changed;
     static size_t n_iterations;
+    static vec_dbl returns;
 
     // Main loop
 #ifdef __EMSCRIPTEN__
@@ -209,6 +210,9 @@ int main(int, char **)
                 mean_path.clear();
                 mean_path.resize(n_iterations);
 
+                returns.clear();
+                returns.resize(n_paths);
+
                 index.resize(n_iterations);
                 for (size_t i = 0; i < n_iterations; i++)
                 {
@@ -225,26 +229,35 @@ int main(int, char **)
                                           StochasticProcessType::brownian, mu, sigma,
                                           delta_t, initial_value);
 
+                for (int i = 0; i < n_paths; i++)
+                {
+                    returns[i] = log(simulated_paths[i].back() / simulated_paths[i][0]);
+                }
+
                 std::cout << "simulated " << n_paths << " paths\n";
                 std::cout << finished << std::endl;
-                print_stock_prices(simulated_paths);
             }
 
             // TODO: fix heap buffer overflow. happens when the number of paths is updatd in the gui
             ImGui::NextColumn();
             if (finished == 0)
             {
-                if (ImPlot::BeginPlot("Simulated Paths"))
+                if (ImPlot::BeginPlot("Simulated Paths", ImVec2(-1, 0), ImPlotFlags_NoLegend))
                 {
-                    // if (index.size() > 0 || index.capacity() > 0)
-                    // {
-                    //     index.clear();
-                    // }
                     for (size_t plot_index = 0; plot_index < (size_t)n_paths; ++plot_index)
                     {
-                        ImPlot::PlotLine("", index.data(), simulated_paths[plot_index].data(), index.size());
+                        ImPlot::PlotLine(
+                            "", index.data(),
+                            simulated_paths[plot_index].data(), index.size(),
+                            ImPlotLineFlags_None);
                     }
                     ImPlot::PlotLine("Mean Path", index.data(), mean_path.data(), index.size());
+                    ImPlot::EndPlot();
+                }
+
+                if (ImPlot::BeginPlot("Log Returns", ImVec2(-1, 0), ImPlotFlags_NoLegend))
+                {
+                    ImPlot::PlotHistogram("", returns.data(), returns.size(), n_paths / 10);
                     ImPlot::EndPlot();
                 }
             }
