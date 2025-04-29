@@ -1,5 +1,5 @@
 #include <vector>
-
+#include <iostream>
 #include "cliargs.h"
 #include "simulation_utils.h"
 
@@ -9,15 +9,36 @@
 int main(int argc, char *argv[])
 {
     CommandLineArgs args = handle_command_line_arguments(argc, argv);
+    size_t n_iterations = determine_n_steps(args.total_time, args.delta_t);
+
     std::vector<vec_dbl> paths(args.n_paths);
-    vec_dbl mean_path;
+    for (size_t i = 0; i < args.n_paths; ++i)
+    {
+        paths.reserve(n_iterations);
+    }
+    vec_dbl mean_path(n_iterations);
 
-    run_simulation(paths, mean_path, args.n_paths, args.process_type,
-                   args.mu, args.sigma, args.delta_t,
-                   args.total_time, args.initial_stock_price_value);
+    int status = run_simulation(
+        paths,
+        mean_path,
+        n_iterations,
+        args.n_paths,
+        args.process_type,
+        args.mu,
+        args.sigma,
+        args.delta_t,
+        args.initial_stock_price_value);
 
-    print_stock_prices(paths);
-    print_stock_price(mean_path);
+    if (status == 0)
+    {
 
-    save_csv_file(args.output_file_name, paths, mean_path);
+        print_stock_prices(paths);
+        print_stock_price(mean_path);
+
+        save_csv_file(args.output_file_name, paths, mean_path);
+    }
+    else
+    {
+        std::cerr << "Error simulating paths\n";
+    }
 }
