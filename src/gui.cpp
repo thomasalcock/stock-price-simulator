@@ -123,9 +123,13 @@ int main(int, char **)
 
     static int n_paths = 5;
     static double mu = 0.05;
+    // static float mu_f = static_cast<float>(mu);
     static double sigma = 0.02;
+    // static float sigma_f = static_cast<float>(sigma);
     static double total_time = 1.0;
+    static float total_time_f = static_cast<float>(total_time);
     static double delta_t = 0.01;
+    static float delta_t_f = static_cast<float>(delta_t);
     static double initial_value = 100;
     static bool start_simulation = false;
     static bool save_file = false;
@@ -178,7 +182,8 @@ int main(int, char **)
             // TODO: leak sanitizer encountered a fatal error after closing the application and previously saving a file
             // TODO: file picker window??
             ImGui::SetNextItemWidth(150.f);
-            n_paths_changed = ImGui::InputInt("Number of paths", &n_paths, 1, 100);
+            n_paths_changed = ImGui::SliderInt("Number of paths", &n_paths, 1, 10000);
+            // n_paths_changed = ImGui::InputInt("Number of paths", &n_paths, 1, 100);
             ImGui::SetNextItemWidth(150.f);
 
             ImGui::InputDouble("Drift", &mu, 0.01, 0.01);
@@ -187,10 +192,12 @@ int main(int, char **)
             ImGui::InputDouble("Volatilty", &sigma, 0.01, 0.01);
             ImGui::SetNextItemWidth(150.f);
 
-            total_time_changed = ImGui::InputDouble("Total time", &total_time, 0.01, 0.01);
+            total_time_changed = ImGui::SliderFloat("Total time", &total_time_f, 1.0, 2.0);
+            total_time = static_cast<double>(total_time_f);
             ImGui::SetNextItemWidth(150.f);
 
-            delta_t_changed = ImGui::InputDouble("Delta time", &delta_t, 0.01, 0.01);
+            delta_t_changed = ImGui::SliderFloat("Delta time", &delta_t_f, 0.001, 0.1, "%.3f", 0);
+            delta_t = static_cast<double>(delta_t_f);
 
             ImGui::InputInt("Number of bins", &n_bins);
 
@@ -202,6 +209,7 @@ int main(int, char **)
             // and draw it to the screen
             if (start_simulation || n_paths_changed || total_time_changed || delta_t_changed)
             {
+
                 n_iterations = determine_n_steps(total_time, delta_t);
 
                 simulated_paths.resize(n_paths);
